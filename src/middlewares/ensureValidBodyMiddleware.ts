@@ -1,0 +1,21 @@
+import { Request, Response, NextFunction } from 'express'
+import { AnySchema } from 'yup'
+import AppError from '../errors/AppError'
+
+const ensureValidBodyMiddleware = (schema: AnySchema) => async (req: Request, resp: Response, next: NextFunction) => {
+  const validated = await schema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true,
+  })
+
+  if(Object.keys(validated).length == 0) {
+    throw new AppError('user not fould', 401);
+  }
+  
+
+  req.body = validated
+  // throw new AppError(error.message, 400)
+  return next()
+  }
+
+export default ensureValidBodyMiddleware
